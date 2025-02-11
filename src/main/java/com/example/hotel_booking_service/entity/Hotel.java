@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +39,10 @@ public class Hotel {
 
     @Column(name = "numberofratings")
     private Integer numberofratings;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    //@Builder.Default
+    private List<Room> commentList = new ArrayList<>();
+
 }

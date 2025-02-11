@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,9 +30,15 @@ public class HotelService {
     private final HotelMapper hotelMapper;
     private final ObjectMapper objectMapper;
 
-    public Hotel create(HotelDto dto) {
-        Hotel hotel = hotelMapper.toEntity(dto);
-        return hotelRepository.save(hotel);
+    public PagedModel<HotelDto> getAll(HotelFilter filter, Pageable pageable) {
+        Page<Hotel> hotels = hotelRepository.findAll(filter.toSpecification(), pageable);
+        Page<HotelDto> hotelDtos = hotels.map(hotelMapper::toHotelDto);
+        return new PagedModel<>(hotelDtos);
+    }
+
+    public HotelDto create(HotelDto dto) {
+        Hotel hotel = hotelRepository.save(hotelMapper.toEntity(dto));
+        return hotelMapper.toHotelDto(hotel);
     }
 
     public HotelDto update(Long id, HotelDto dto) {
@@ -85,12 +92,11 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-    public Hotel delete(Long id) {
-        Hotel hotel = hotelRepository.findById(id).orElse(null);
-        if (hotel != null) {
-            hotelRepository.delete(hotel);
-        }
-        return hotel;
+    public HotelDto delete(Long id) {
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
+        hotelRepository.delete(hotel);
+        return hotelMapper.toHotelDto(hotel);
     }
 
     public void deleteMany(List<Long> ids) {
@@ -104,10 +110,7 @@ public class HotelService {
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
     }
 
-    public Page<Hotel> getAll(HotelFilter filter, Pageable pageable) {
-        Specification<Hotel> spec = filter.toSpecification();
-        return hotelRepository.findAll(spec, pageable);
-    }
+
 
     public List<Hotel> getMany(List<Long> ids) {
         return hotelRepository.findAllById(ids);

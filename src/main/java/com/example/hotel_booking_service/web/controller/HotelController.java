@@ -27,23 +27,19 @@ public class HotelController {
     private final HotelService hotelService;
     private final HotelMapper hotelMapper;
 
+    @GetMapping
+    public PagedModel<HotelDto> getAll(@ModelAttribute HotelFilter filter, Pageable pageable) {
+        return hotelService.getAll(filter, pageable);
+    }
+
     @PostMapping
-    public ResponseEntity<HotelDto> create(@RequestBody @Valid HotelDto dto) {
-        Hotel createdHotel = hotelService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(hotelMapper.toHotelDto(createdHotel));
+    public HotelDto create(@RequestBody @Valid HotelDto dto) {
+        return hotelService.create(dto);
     }
 
     @PutMapping("/{id}")
     public HotelDto update(@PathVariable Long id, @RequestBody @Valid HotelDto dto) {
         return hotelService.update(id, dto);
-    }
-
-    @GetMapping
-    public ResponseEntity<PagedModel<HotelDto>> getAll(@ModelAttribute HotelFilter filter, Pageable pageable) {
-        Page<Hotel> hotels = hotelService.getAll(filter, pageable);
-        Page<HotelDto> hotelDtos = hotels.map(hotelMapper::toHotelDto);
-        PagedModel<HotelDto> pagedModel = new PagedModel<>(hotelDtos);
-        return ResponseEntity.ok(pagedModel);
     }
 
     @PatchMapping("/{id}")
@@ -53,13 +49,8 @@ public class HotelController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HotelDto> delete(@PathVariable Long id) {
-        Hotel deletedHotel = hotelService.delete(id);
-        if (deletedHotel != null) {
-            return ResponseEntity.ok(hotelMapper.toHotelDto(deletedHotel));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public HotelDto delete(@PathVariable Long id) {
+        return hotelService.delete(id);
     }
 
     @GetMapping("/by-ids")

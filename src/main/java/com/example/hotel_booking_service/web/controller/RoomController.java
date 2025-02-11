@@ -4,7 +4,7 @@ import com.example.hotel_booking_service.entity.Room;
 import com.example.hotel_booking_service.mapper.RoomMapper;
 import com.example.hotel_booking_service.service.RoomService;
 import com.example.hotel_booking_service.web.dto.RoomDto;
-import com.example.hotel_booking_service.web.filter.RoomFilter;
+import com.example.hotel_booking_service.repository.specification.RoomFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,9 +41,8 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomDto> getOne(@PathVariable Long id) {
-        Room room = roomService.getOne(id);
-        return ResponseEntity.ok(roomMapper.toRoomDto(room));
+    public RoomDto getOne(@PathVariable Long id) {
+        return roomService.getOne(id);
     }
 
     @GetMapping("/by-ids")
@@ -56,32 +55,22 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomDto> edit(@PathVariable Long id, @RequestBody RoomDto roomDto) {
-        Room updatedRoom = roomService.edit(id, roomDto);
-        return ResponseEntity.ok(roomMapper.toRoomDto(updatedRoom));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<RoomDto> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Room patchedRoom = roomService.patch(id, patchNode);
-        return ResponseEntity.ok(roomMapper.toRoomDto(patchedRoom));
-    }
-
-    @PatchMapping
-    public ResponseEntity<List<Long>> patchMany(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) throws IOException {
-        List<Long> patchedRoomIds = roomService.patchMany(ids, patchNode);
-        return ResponseEntity.ok(patchedRoomIds);
+    public RoomDto update(@PathVariable Long id, @RequestBody RoomDto roomDto) {
+        return roomService.update(id, roomDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RoomDto> delete(@PathVariable Long id) {
-        Room deletedRoom = roomService.delete(id);
-        if (deletedRoom != null) {
-            return ResponseEntity.ok(roomMapper.toRoomDto(deletedRoom));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public RoomDto delete(@PathVariable Long id) {
+        return roomService.delete(id);
     }
+//    public ResponseEntity<RoomDto> delete(@PathVariable Long id) {
+//        Room deletedRoom = roomService.delete(id);
+//        if (deletedRoom != null) {
+//            return ResponseEntity.ok(roomMapper.toRoomDto(deletedRoom));
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @DeleteMapping
     public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {

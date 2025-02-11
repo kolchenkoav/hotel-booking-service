@@ -1,6 +1,8 @@
 package com.example.hotel_booking_service.web.dto;
 
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -10,15 +12,16 @@ import java.util.Set;
 /**
  * DTO for {@link com.example.hotel_booking_service.entity.Room}
  */
-@Value
+@Data
+@AllArgsConstructor
 public class RoomDto {
-    Long hotelId;
-    String name;
-    String description;
-    String roomNumber;
+    private Long hotelId;
+    private String name;
+    private String description;
+    private String roomNumber;
     @Positive(message = "Цена должна быть положительной")
-    BigDecimal price;
+    private BigDecimal price;
     @Positive
-    Integer maxPeople;
-    Set<LocalDate> unavailableDates;
+    private Integer maxPeople;
+    private Set<LocalDate> unavailableDates;
 }

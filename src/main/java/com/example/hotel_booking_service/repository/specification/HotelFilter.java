@@ -1,4 +1,4 @@
-package com.example.hotel_booking_service.web.filter;
+package com.example.hotel_booking_service.repository.specification;
 
 import com.example.hotel_booking_service.entity.Hotel;
 import org.springframework.data.jpa.domain.Specification;

@@ -1,12 +1,10 @@
-package com.example.hotel_booking_service.web.filter;
+package com.example.hotel_booking_service.repository.specification;
 
 import com.example.hotel_booking_service.entity.Room;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Set;
 
 public record RoomFilter(String nameStarts, String descriptionStarts, String roomNumberContains, BigDecimal priceGte,
                          BigDecimal priceLte, Integer maxPeople) {

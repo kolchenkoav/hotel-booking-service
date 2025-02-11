@@ -4,18 +4,18 @@ import com.example.hotel_booking_service.entity.Hotel;
 import com.example.hotel_booking_service.mapper.HotelMapper;
 import com.example.hotel_booking_service.repository.HotelRepository;
 import com.example.hotel_booking_service.web.dto.HotelDto;
-import com.example.hotel_booking_service.web.filter.HotelFilter;
+import com.example.hotel_booking_service.repository.specification.HotelFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -34,18 +34,34 @@ public class HotelService {
         return hotelRepository.save(hotel);
     }
 
-    public Hotel edit(Long id, HotelDto dto) {
+    public HotelDto update(Long id, HotelDto dto) {
         Hotel existingHotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        Hotel updatedHotel = hotelMapper.toEntity(dto);
-        updatedHotel.setId(id);
-        return hotelRepository.save(updatedHotel);
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
+        if (dto.getName() != null) {
+            existingHotel.setName(dto.getName());
+        }
+        if (dto.getName() != null) {
+            existingHotel.setName(dto.getName());
+        }
+        if (dto.getTitle() != null) {
+            existingHotel.setTitle(dto.getTitle());
+        }
+        if (dto.getCity() != null) {
+            existingHotel.setCity(dto.getCity());
+        }
+        if (dto.getRating() != null) {
+            existingHotel.setRating(dto.getRating());
+        }
+        if (dto.getNumberofratings() != null) {
+            existingHotel.setNumberofratings(dto.getNumberofratings());
+        }
+        Hotel resultHotel = hotelRepository.save(existingHotel);
+        return hotelMapper.toHotelDto(resultHotel);
     }
 
     public Hotel patch(Long id, JsonNode patchNode) throws IOException {
-        Hotel hotel = hotelRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
 
         HotelDto hotelDto = hotelMapper.toHotelDto(hotel);
         objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
@@ -84,8 +100,8 @@ public class HotelService {
 
     public Hotel getOne(Long id) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
-        return hotelOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+        return hotelOptional
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
     }
 
     public Page<Hotel> getAll(HotelFilter filter, Pageable pageable) {

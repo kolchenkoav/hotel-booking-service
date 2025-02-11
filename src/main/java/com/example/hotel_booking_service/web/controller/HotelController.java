@@ -4,7 +4,7 @@ import com.example.hotel_booking_service.entity.Hotel;
 import com.example.hotel_booking_service.mapper.HotelMapper;
 import com.example.hotel_booking_service.service.HotelService;
 import com.example.hotel_booking_service.web.dto.HotelDto;
-import com.example.hotel_booking_service.web.filter.HotelFilter;
+import com.example.hotel_booking_service.repository.specification.HotelFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,11 @@ public class HotelController {
     public ResponseEntity<HotelDto> create(@RequestBody @Valid HotelDto dto) {
         Hotel createdHotel = hotelService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelMapper.toHotelDto(createdHotel));
+    }
+
+    @PutMapping("/{id}")
+    public HotelDto update(@PathVariable Long id, @RequestBody @Valid HotelDto dto) {
+        return hotelService.update(id, dto);
     }
 
     @GetMapping

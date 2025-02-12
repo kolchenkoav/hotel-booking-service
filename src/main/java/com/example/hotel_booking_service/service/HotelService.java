@@ -101,6 +101,9 @@ public class HotelService {
         if (dto.getCity() != null) {
             existingHotel.setCity(dto.getCity());
         }
+        if (dto.getDistance() != null) {
+            existingHotel.setDistance(dto.getDistance());
+        }
         if (dto.getRating() != null) {
             existingHotel.setRating(dto.getRating());
         }
@@ -127,7 +130,7 @@ public class HotelService {
         try {
             objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
         hotelMapper.updateWithNull(hotelDto, hotel);
 

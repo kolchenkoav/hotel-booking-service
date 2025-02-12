@@ -11,7 +11,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +18,11 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для работы с отелями.
+ */
 @RequiredArgsConstructor
 @Service
 public class HotelService {
@@ -30,23 +31,67 @@ public class HotelService {
     private final HotelMapper hotelMapper;
     private final ObjectMapper objectMapper;
 
-    public PagedModel<HotelDto> getAll(HotelFilter filter, Pageable pageable) {
+    /**
+     * Получает все отели с учетом фильтра и пагинации.
+     *
+     * @param filter фильтр для поиска отелей
+     * @param pageable параметры пагинации
+     * @return страница с отелями
+     */
+    public PagedModel<HotelDto> getAllHotels(HotelFilter filter, Pageable pageable) {
         Page<Hotel> hotels = hotelRepository.findAll(filter.toSpecification(), pageable);
         Page<HotelDto> hotelDtos = hotels.map(hotelMapper::toHotelDto);
         return new PagedModel<>(hotelDtos);
     }
 
-    public HotelDto create(HotelDto dto) {
+    /**
+     * Получает один отель по его идентификатору.
+     *
+     * @param id идентификатор отеля
+     * @return DTO отеля
+     * @throws EntityNotFoundException если отель не найден
+     */
+    public HotelDto getOne(Long id) {
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
+        return hotelMapper.toHotelDto(hotel);
+    }
+
+    /**
+     * Получает несколько отелей по их идентификаторам.
+     *
+     * @param ids список идентификаторов отелей
+     * @return список DTO отелей
+     */
+    public List<HotelDto> getMany(List<Long> ids) {
+        List<Hotel> hotels = hotelRepository.findAllById(ids);
+        return hotels.stream()
+                .map(hotelMapper::toHotelDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Сохраняет новый отель.
+     *
+     * @param dto DTO нового отеля
+     * @return DTO сохраненного отеля
+     */
+    public HotelDto save(HotelDto dto) {
         Hotel hotel = hotelRepository.save(hotelMapper.toEntity(dto));
         return hotelMapper.toHotelDto(hotel);
     }
 
+    /**
+     * Обновляет существующий отель.
+     *
+     * @param id идентификатор отеля
+     * @param dto DTO с обновленными данными
+     * @return DTO обновленного отеля
+     * @throws EntityNotFoundException если отель не найден
+     */
     public HotelDto update(Long id, HotelDto dto) {
         Hotel existingHotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
-        if (dto.getName() != null) {
-            existingHotel.setName(dto.getName());
-        }
         if (dto.getName() != null) {
             existingHotel.setName(dto.getName());
         }
@@ -66,23 +111,46 @@ public class HotelService {
         return hotelMapper.toHotelDto(resultHotel);
     }
 
-    public Hotel patch(Long id, JsonNode patchNode) throws IOException {
+    /**
+     * Частично обновляет существующий отель.
+     *
+     * @param id идентификатор отеля
+     * @param patchNode JSON-объект с обновленными данными
+     * @return DTO обновленного отеля
+     * @throws EntityNotFoundException если отель не найден
+     */
+    public HotelDto patch(Long id, JsonNode patchNode) {
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
 
         HotelDto hotelDto = hotelMapper.toHotelDto(hotel);
-        objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
+        try {
+            objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         hotelMapper.updateWithNull(hotelDto, hotel);
 
-        return hotelRepository.save(hotel);
+        return hotelMapper.toHotelDto(hotelRepository.save(hotel));
     }
 
-    public List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException {
+    /**
+     * Частично обновляет несколько отелей.
+     *
+     * @param ids список идентификаторов отелей
+     * @param patchNode JSON-объект с обновленными данными
+     * @return список идентификаторов обновленных отелей
+     */
+    public List<Long> patchMany(List<Long> ids, JsonNode patchNode) {
         Collection<Hotel> hotels = hotelRepository.findAllById(ids);
 
         for (Hotel hotel : hotels) {
             HotelDto hotelDto = hotelMapper.toHotelDto(hotel);
-            objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
+            try {
+                objectMapper.readerForUpdating(hotelDto).readValue(patchNode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             hotelMapper.updateWithNull(hotelDto, hotel);
         }
 
@@ -92,27 +160,25 @@ public class HotelService {
                 .collect(Collectors.toList());
     }
 
-    public HotelDto delete(Long id) {
+    /**
+     * Удаляет отель по его идентификатору.
+     *
+     * @param id идентификатор отеля
+     * @throws EntityNotFoundException если отель не найден
+     */
+    public void delete(Long id) {
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
         hotelRepository.delete(hotel);
-        return hotelMapper.toHotelDto(hotel);
     }
 
+    /**
+     * Удаляет несколько отелей по их идентификаторам.
+     *
+     * @param ids список идентификаторов отелей
+     */
     public void deleteMany(List<Long> ids) {
         List<Hotel> hotels = hotelRepository.findAllById(ids);
         hotelRepository.deleteAll(hotels);
-    }
-
-    public Hotel getOne(Long id) {
-        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
-        return hotelOptional
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("Hotel with id {0} not found", id)));
-    }
-
-
-
-    public List<Hotel> getMany(List<Long> ids) {
-        return hotelRepository.findAllById(ids);
     }
 }

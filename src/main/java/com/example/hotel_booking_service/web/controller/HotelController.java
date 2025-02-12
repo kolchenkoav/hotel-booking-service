@@ -1,79 +1,128 @@
 package com.example.hotel_booking_service.web.controller;
 
-import com.example.hotel_booking_service.entity.Hotel;
-import com.example.hotel_booking_service.mapper.HotelMapper;
 import com.example.hotel_booking_service.service.HotelService;
 import com.example.hotel_booking_service.web.dto.HotelDto;
 import com.example.hotel_booking_service.repository.specification.HotelFilter;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Контроллер для управления отелями.
+ */
 @RestController
 @RequestMapping("/rest/admin-ui/hotels")
 @RequiredArgsConstructor
 public class HotelController {
 
     private final HotelService hotelService;
-    private final HotelMapper hotelMapper;
 
+    /**
+     * Получает список отелей с возможностью фильтрации и пагинации.
+     *
+     * @param filter фильтр для поиска отелей
+     * @param pageable параметры пагинации
+     * @return список отелей
+     */
     @GetMapping
-    public PagedModel<HotelDto> getAll(@ModelAttribute HotelFilter filter, Pageable pageable) {
-        return hotelService.getAll(filter, pageable);
+    public PagedModel<HotelDto> getAllHotels(@ModelAttribute HotelFilter filter, Pageable pageable) {
+        return hotelService.getAllHotels(filter, pageable);
     }
 
+    /**
+     * Получает информацию об одном отеле по его идентификатору.
+     *
+     * @param id идентификатор отеля
+     * @return информация об отеле
+     */
+    @GetMapping("/{id}")
+    public HotelDto getOne(@PathVariable Long id) {
+        return hotelService.getOne(id);
+    }
+
+    /**
+     * Получает информацию о нескольких отелях по их идентификаторам.
+     *
+     * @param ids список идентификаторов отелей
+     * @return список информации об отелях
+     */
+    @GetMapping("/by-ids")
+    public List<HotelDto> getMany(@RequestParam List<Long> ids) {
+        return hotelService.getMany(ids);
+    }
+
+    /**
+     * Создает новый отель.
+     *
+     * @param dto данные нового отеля
+     * @return информация о созданном отеле
+     */
     @PostMapping
-    public HotelDto create(@RequestBody @Valid HotelDto dto) {
-        return hotelService.create(dto);
+    public ResponseEntity<HotelDto> create(@RequestBody @Valid HotelDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(hotelService.save(dto));
     }
 
+    /**
+     * Обновляет информацию об отеле.
+     *
+     * @param id идентификатор отеля
+     * @param dto новые данные отеля
+     * @return обновленная информация об отеле
+     */
     @PutMapping("/{id}")
     public HotelDto update(@PathVariable Long id, @RequestBody @Valid HotelDto dto) {
         return hotelService.update(id, dto);
     }
 
+    /**
+     * Частично обновляет информацию об отеле.
+     *
+     * @param id идентификатор отеля
+     * @param patchNode данные для частичного обновления
+     * @return обновленная информация об отеле
+     */
     @PatchMapping("/{id}")
-    public ResponseEntity<HotelDto> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Hotel patchedHotel = hotelService.patch(id, patchNode);
-        return ResponseEntity.ok(hotelMapper.toHotelDto(patchedHotel));
+    public HotelDto patch(@PathVariable Long id, @RequestBody JsonNode patchNode) {
+        return hotelService.patch(id, patchNode);
     }
 
-    @DeleteMapping("/{id}")
-    public HotelDto delete(@PathVariable Long id) {
-        return hotelService.delete(id);
-    }
-
-    @GetMapping("/by-ids")
-    public ResponseEntity<List<HotelDto>> getMany(@RequestParam List<Long> ids) {
-        List<Hotel> hotels = hotelService.getMany(ids);
-        List<HotelDto> hotelDtos = hotels.stream()
-                .map(hotelMapper::toHotelDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(hotelDtos);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<HotelDto> getOne(@PathVariable Long id) {
-        Hotel hotel = hotelService.getOne(id);
-        return ResponseEntity.ok(hotelMapper.toHotelDto(hotel));
-    }
-
+    /**
+     * Частично обновляет информацию о нескольких отелях.
+     *
+     * @param ids список идентификаторов отелей
+     * @param patchNode данные для частичного обновления
+     * @return список идентификаторов обновленных отелей
+     */
     @PatchMapping
-    public ResponseEntity<List<Long>> patchMany(@RequestParam @Valid List<Long> ids, @RequestBody JsonNode patchNode) throws IOException {
-        List<Long> patchedIds = hotelService.patchMany(ids, patchNode);
-        return ResponseEntity.ok(patchedIds);
+    public List<Long> patchMany(@RequestParam @Valid List<Long> ids, @RequestBody JsonNode patchNode) {
+        return hotelService.patchMany(ids, patchNode);
     }
 
+    /**
+     * Удаляет отель по его идентификатору.
+     *
+     * @param id идентификатор отеля
+     * @return статус ответа
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        hotelService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Удаляет несколько отелей по их идентификаторам.
+     *
+     * @param ids список идентификаторов отелей
+     * @return статус ответа
+     */
     @DeleteMapping
     public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
         hotelService.deleteMany(ids);

@@ -4,7 +4,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     generate-ddl: true
   datasource:
     url: jdbc:postgresql://localhost:5432/hotel_booking_db
@@ -14,3 +14,6 @@ spring:
       schema: hotel_booking_schema
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS hotel_booking_schema
       connection-timeout: 10000
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0

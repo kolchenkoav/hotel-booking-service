@@ -6,6 +6,7 @@ import com.example.hotel_booking_service.repository.UserRepository;
 import com.example.hotel_booking_service.web.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Получает список всех пользователей.
@@ -63,7 +65,7 @@ public class UserService {
 
         User user = new User();
         user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
         user.setRole(dto.getRole());
         User savedUser = userRepository.save(user);
@@ -87,7 +89,7 @@ public class UserService {
             user.setUsername(dto.getUsername());
         }
         if (dto.getPassword() != null) {
-            user.setPassword(dto.getPassword());
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         if (dto.getEmail() != null) {
             user.setEmail(dto.getEmail());

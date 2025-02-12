@@ -41,13 +41,13 @@ public class UserController {
     }
 
     /**
-     * Создает нового пользователя.
+     * Регистрирует нового пользователя.
      *
      * @param dto данные нового пользователя
      * @return созданный пользователь
      */
-    @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody UserDto dto) {
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> register(@RequestBody UserDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(dto));
     }
 

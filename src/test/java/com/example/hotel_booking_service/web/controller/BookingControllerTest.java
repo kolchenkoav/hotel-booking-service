@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -71,6 +72,7 @@ class BookingControllerTest {
 
     @Test
     @Order(1)
+    @WithMockUser(username = "user", roles = "ADMIN")
     @DisplayName("Тест: Успешное бронирование комнаты")
     void testSuccessfulBooking() throws Exception {
         User user = new User();
@@ -79,6 +81,13 @@ class BookingControllerTest {
         user.setEmail("test_user@example.com");
         user.setRole(RoleType.ROLE_USER);
         user = userRepository.save(user);
+
+        User admin = new User();
+        admin.setUsername("test_admin");
+        admin.setPassword("password123");
+        admin.setEmail("test_admin@example.com");
+        admin.setRole(RoleType.ROLE_ADMIN);
+        admin = userRepository.save(admin);
 
         Hotel hotel = new Hotel();
         hotel.setName("Test Hotel");
@@ -125,6 +134,7 @@ class BookingControllerTest {
 
     @Test
     @Order(2)
+    @WithMockUser(username = "user", roles = "ADMIN")
     @DisplayName("Тест: Получение списка бронирований")
     void testGetAllBookings() throws Exception {
         mockMvc.perform(get("/rest/admin-ui/bookings"))

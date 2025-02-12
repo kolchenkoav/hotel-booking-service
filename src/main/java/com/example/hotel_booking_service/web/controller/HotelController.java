@@ -100,7 +100,7 @@ public class HotelController {
      * @param patchNode данные для частичного обновления
      * @return список идентификаторов обновленных отелей
      */
-    @PatchMapping
+    @PatchMapping("/by-ids")
     public List<Long> patchMany(@RequestParam @Valid List<Long> ids, @RequestBody JsonNode patchNode) {
         return hotelService.patchMany(ids, patchNode);
     }
@@ -123,7 +123,7 @@ public class HotelController {
      * @param ids список идентификаторов отелей
      * @return статус ответа
      */
-    @DeleteMapping
+    @DeleteMapping("/by-ids")
     public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
         hotelService.deleteMany(ids);
         return ResponseEntity.noContent().build();

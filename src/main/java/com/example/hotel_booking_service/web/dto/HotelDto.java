@@ -19,4 +19,5 @@ public class HotelDto {
     private Integer distance;
     private Integer rating;
     private Integer numberofratings;
+    private Integer newMark;
 }

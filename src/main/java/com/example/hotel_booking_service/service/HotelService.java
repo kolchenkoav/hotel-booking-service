@@ -15,6 +15,8 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +32,39 @@ public class HotelService {
     private final HotelRepository hotelRepository;
     private final HotelMapper hotelMapper;
     private final ObjectMapper objectMapper;
+
+    /**
+     * Обновляет рейтинг отеля.
+     *
+     * @param id идентификатор отеля
+     * @param newMark новая оценка
+     * @return DTO обновленного отеля
+     * @throws EntityNotFoundException если отель не найден
+     */
+    public HotelDto updateRating(Long id, Integer newMark) {
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(MessageFormat
+                        .format("Hotel with id {0} not found", id)));
+
+        Integer rating = hotel.getRating();
+        Integer numberOfRating = hotel.getNumberofratings();
+
+        // Вычисляем сумму всех оценок
+        Integer totalRating = rating * numberOfRating;
+
+        // Обновляем сумму всех оценок
+        totalRating = totalRating - rating + newMark;
+
+        // Вычисляем новый средний рейтинг
+        BigDecimal newRating = new BigDecimal(totalRating).divide(new BigDecimal(numberOfRating + 1), 1, RoundingMode.HALF_UP);
+
+        // Обновляем рейтинг и количество оценок
+        hotel.setRating(newRating.intValue());
+        hotel.setNumberofratings(numberOfRating + 1);
+
+        Hotel resultHotel = hotelRepository.save(hotel);
+        return hotelMapper.toHotelDto(resultHotel);
+    }
 
     /**
      * Получает все отели с учетом фильтра и пагинации.

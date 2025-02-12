@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
 class BookingControllerTest {
 
@@ -63,11 +65,21 @@ class BookingControllerTest {
         System.setProperty("spring.datasource.password", postgres.getPassword());
     }
 
+    @AfterAll
+    static void afterAll() {
+        postgres.stop();
+        postgres.close();
+    }
+
     @BeforeEach
     void setUp() {
-        bookingRepository.deleteAll();
-        roomRepository.deleteAll();
-        userRepository.deleteAll();
+        try {
+            bookingRepository.deleteAll();
+            roomRepository.deleteAll();
+            userRepository.deleteAll();
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

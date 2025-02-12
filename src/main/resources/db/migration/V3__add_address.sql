@@ -1,0 +1,1 @@
+ALTER TABLE hotel ADD COLUMN address VARCHAR(255);

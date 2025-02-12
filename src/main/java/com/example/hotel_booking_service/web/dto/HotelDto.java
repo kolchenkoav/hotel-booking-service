@@ -12,9 +12,11 @@ import lombok.Value;
 @Data
 @AllArgsConstructor
 public class HotelDto {
+    private Long id;
     private String name;
     private String title;
     private String city;
+    private String address;
     @PositiveOrZero(message = "The distance from the center should be positive")
     private Integer distance;
     private Integer rating;

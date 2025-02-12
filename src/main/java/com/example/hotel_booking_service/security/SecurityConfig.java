@@ -64,7 +64,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-
     /**
      * Bean для конфигурации аутентификации.
      *

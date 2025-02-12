@@ -29,6 +29,9 @@ public class Hotel {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "distance")
     private Integer distance;
 
@@ -42,7 +45,6 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
     @ToString.Exclude
-    //@Builder.Default
-    private List<Room> commentList = new ArrayList<>();
+    private List<Room> roomList = new ArrayList<>();
 
 }

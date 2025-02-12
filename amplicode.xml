@@ -6,7 +6,7 @@
   </component>
   <component name="AmplicodePersistenceUnitSettings">
     <persistence-units>
-      <persistence-unit moduleName="hotel-booking-service.main" name="Default">
+      <persistence-unit moduleName="hotel-booking-service.main" name="Default" defaultSearchScope="Project">
         <packages>
           <package value="com.example.hotel_booking_service" />
         </packages>

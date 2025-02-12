@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.4.2"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("org.flywaydb.flyway") version "11.3.1"
 }
 
 group = "com.example"
@@ -56,4 +57,10 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+flyway {
+	url = "jdbc:postgresql://localhost:5432/hotel_booking_db"
+	user = "postgres"
+	password = "postgres"
 }

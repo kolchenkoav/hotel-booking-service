@@ -1,13 +1,17 @@
 package com.example.hotel_booking_service.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Конфигурация безопасности для приложения.
@@ -15,7 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     /**
      * Конструктор для внедрения UserDetailsService.
@@ -43,20 +48,22 @@ public class SecurityConfig {
      * @return экземпляр SecurityFilterChain.
      * @throws Exception если возникает ошибка при настройке.
      */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf(AbstractHttpConfigurer::disable) // Новый способ отключения CSRF-защиты
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/rest/admin-ui/users/register").permitAll() // Регистрация доступна всем
                         .requestMatchers("/rest/admin-ui/rooms/**", "/rest/admin-ui/bookings/**")
                         .hasRole("ADMIN") // Только админ может управлять комнатами и бронированиями отелей
                         .anyRequest().authenticated()
                 )
-                .httpBasic(); // Используем Basic Auth
+                .httpBasic(withDefaults()); // Используем Basic Auth
 
         return http.build();
     }
+
 
     /**
      * Bean для конфигурации аутентификации.

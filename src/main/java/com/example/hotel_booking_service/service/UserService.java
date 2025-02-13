@@ -1,6 +1,8 @@
 package com.example.hotel_booking_service.service;
 
 import com.example.hotel_booking_service.entity.User;
+import com.example.hotel_booking_service.kafka.KafkaProducerService;
+import com.example.hotel_booking_service.kafka.dto.KafkaUserRegistrationEvent;
 import com.example.hotel_booking_service.mapper.UserMapper;
 import com.example.hotel_booking_service.repository.UserRepository;
 import com.example.hotel_booking_service.web.dto.UserDto;
@@ -22,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaProducerService kafkaProducerService;
 
     /**
      * Получает список всех пользователей.
@@ -69,7 +72,13 @@ public class UserService {
         user.setEmail(dto.getEmail());
         user.setRole(dto.getRole());
         User savedUser = userRepository.save(user);
-        return new UserDto(savedUser.getUsername(), savedUser.getPassword(), savedUser.getEmail(), savedUser.getRole());
+
+        // Отправляем событие в Kafka
+        KafkaUserRegistrationEvent event = new KafkaUserRegistrationEvent();
+        event.setUserId(savedUser.getId());
+        kafkaProducerService.sendUserRegistration(event);
+
+        return userMapper.toUserDto(savedUser);
     }
 
     /**

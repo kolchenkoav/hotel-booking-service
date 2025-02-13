@@ -53,6 +53,18 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.flywaydb:flyway-database-postgresql:10.12.0")
     implementation("org.flywaydb:flyway-core")
+
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.apache.kafka:kafka-clients:3.9.0")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("org.mongodb:mongodb-driver-sync:4.9.1")
+	implementation("org.mongodb:mongodb-driver-core:4.9.1")
+	implementation("org.mongodb:mongodb-driver-legacy:4.9.1")
+
+	testImplementation("org.springframework.kafka:spring-kafka-test:3.3.2")
+	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.5.0")
+	testImplementation("org.testcontainers:mongodb:1.20.4")
 }
 
 tasks.withType<Test> {

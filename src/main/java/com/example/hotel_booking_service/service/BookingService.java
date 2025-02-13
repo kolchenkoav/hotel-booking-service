@@ -1,8 +1,10 @@
 package com.example.hotel_booking_service.service;
 
+import com.example.hotel_booking_service.kafka.dto.KafkaBookingEvent;
 import com.example.hotel_booking_service.entity.Booking;
 import com.example.hotel_booking_service.entity.Room;
 import com.example.hotel_booking_service.entity.User;
+import com.example.hotel_booking_service.kafka.KafkaProducerService;
 import com.example.hotel_booking_service.repository.BookingRepository;
 import com.example.hotel_booking_service.repository.RoomRepository;
 import com.example.hotel_booking_service.repository.UserRepository;
@@ -22,6 +24,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public BookingResponseDto bookRoom(BookingRequestDto request) {
@@ -43,6 +46,14 @@ public class BookingService {
         booking.setCheckOut(request.getCheckOut());
 
         Booking savedBooking = bookingRepository.save(booking);
+
+        // Отправляем событие в Kafka
+        KafkaBookingEvent event = new KafkaBookingEvent();
+        event.setUserId(user.getId());
+        event.setCheckIn(request.getCheckIn());
+        event.setCheckOut(request.getCheckOut());
+        kafkaProducerService.sendRoomBooking(event);
+
         return toBookingResponseDto(savedBooking);
     }
 

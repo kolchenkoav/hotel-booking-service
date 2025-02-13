@@ -3,7 +3,7 @@ package com.example.hotel_booking_service.web.dto;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +14,9 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RoomDto {
+    private Long id;
     private Long hotelId;
     private String name;
     private String description;
@@ -24,4 +26,6 @@ public class RoomDto {
     @Positive
     private Integer maxPeople;
     private Set<LocalDate> unavailableDates;
+    private LocalDate checkIn;
+    private LocalDate checkOut;
 }

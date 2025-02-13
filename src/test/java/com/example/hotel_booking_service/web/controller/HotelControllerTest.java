@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -72,7 +71,7 @@ class HotelControllerTest {
     @WithMockUser(username = "user", roles = "ADMIN")
     @DisplayName("Тест: Успешное создание отеля")
     void testCreateHotel() throws Exception {
-        HotelDto hotelDto = new HotelDto("Hotel Name", "Hotel Title", "City", 10, 4, 100, 0);
+        HotelDto hotelDto = new HotelDto(null, "Hotel Name", "Hotel Title", "City", "", 10, 4, 100, 0);
         mockMvc.perform(post("/rest/admin-ui/hotels")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(hotelDto)))
@@ -120,7 +119,7 @@ class HotelControllerTest {
         hotel.setNumberofratings(100);
         hotel = hotelRepository.save(hotel);
 
-        HotelDto updatedHotelDto = new HotelDto("Updated Hotel Name", "Updated Hotel Title", "Updated City", 20, 5, 200, 0);
+        HotelDto updatedHotelDto = new HotelDto(1L, "Updated Hotel Name", "Updated Hotel Title", "Updated City", "",20, 5, 200, 0);
         mockMvc.perform(put("/rest/admin-ui/hotels/{id}", hotel.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedHotelDto)))

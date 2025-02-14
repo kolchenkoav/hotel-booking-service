@@ -41,7 +41,7 @@ services:
 
   mongo:
     image: mongo:8.0.4
-    restart: "no"
+    restart: always
     ports:
       - "27017:27017"
     volumes:
@@ -99,7 +99,7 @@ services:
 
   mongoexpress:
     image: mongo-express:1.0.2
-    restart: "no"
+    restart: always
     ports:
       - "8081:8081"
     environment:

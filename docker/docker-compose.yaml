@@ -96,7 +96,6 @@ services:
       zookeeper:
         condition: service_healthy
 
-
   mongoexpress:
     image: mongo-express:1.0.2
     restart: always

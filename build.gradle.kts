@@ -25,6 +25,7 @@ repositories {
 }
 
 dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -53,8 +54,9 @@ dependencies {
 	testImplementation("org.springframework.kafka:spring-kafka-test:3.3.2")
 
 	// MongoDB
-	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.mongodb:mongodb-driver-sync:4.10.2")
+	// https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-sync
+	implementation("org.mongodb:mongodb-driver-sync:5.2.1")
+
 
 	// Flyway
 	implementation("org.flywaydb:flyway-database-postgresql:10.12.0")

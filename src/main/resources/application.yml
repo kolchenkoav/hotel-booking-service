@@ -33,4 +33,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://root:mongodb_secret@localhost:27017/mydb
+      authentication-database: admin
+      database: hotel_booking_db
+      port: 27017
+      host: localhost

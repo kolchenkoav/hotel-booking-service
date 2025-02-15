@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления бронированием номеров в отеле.
+ */
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -26,6 +29,14 @@ public class BookingService {
     private final RoomRepository roomRepository;
     private final KafkaProducerService kafkaProducerService;
 
+    /**
+     * Бронирует номер для пользователя.
+     *
+     * @param request запрос на бронирование
+     * @return информация о бронировании
+     * @throws EntityNotFoundException если пользователь или номер не найдены
+     * @throws IllegalStateException если номер уже забронирован на выбранные даты
+     */
     @Transactional
     public BookingResponseDto bookRoom(BookingRequestDto request) {
         User user = userRepository.findById(request.getUserId())
@@ -57,6 +68,11 @@ public class BookingService {
         return toBookingResponseDto(savedBooking);
     }
 
+    /**
+     * Возвращает все бронирования.
+     *
+     * @return список всех бронирований
+     */
     public List<BookingResponseDto> getAllBookings() {
         return bookingRepository.findAll()
                 .stream()
@@ -64,6 +80,12 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Преобразует объект бронирования в DTO.
+     *
+     * @param booking объект бронирования
+     * @return DTO бронирования
+     */
     private BookingResponseDto toBookingResponseDto(Booking booking) {
         BookingResponseDto dto = new BookingResponseDto();
         dto.setBookingId(booking.getId());

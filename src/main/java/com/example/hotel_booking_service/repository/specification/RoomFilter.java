@@ -9,12 +9,21 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
+/**
+ * Фильтр для поиска комнат.
+ *
+ * @param id ID комнаты.
+ * @param nameStarts Начало названия комнаты.
+ * @param priceGte Минимальная цена комнаты.
+ * @param priceLte Максимальная цена комнаты.
+ * @param maxPeople Максимальное количество гостей в комнате.
+ * @param checkIn Дата заезда.
+ * @param checkOut Дата выезда.
+ * @param hotelId ID отеля.
+ */
 public record RoomFilter(Long id, String nameStarts,
                          BigDecimal priceGte,
                          BigDecimal priceLte, Integer maxPeople, LocalDate checkIn, LocalDate checkOut, Long hotelId) {
-    //private static LocalDate checkIn;
-    //private static LocalDate checkOut;
 
     public Specification<Room> toSpecification() {
         return Specification.where(idSpec())        // ID комнаты

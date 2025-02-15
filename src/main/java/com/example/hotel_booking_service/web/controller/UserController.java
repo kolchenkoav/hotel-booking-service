@@ -13,7 +13,7 @@ import java.util.List;
  * Контроллер для управления пользователями.
  */
 @RestController
-@RequestMapping("/rest/admin-ui/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired

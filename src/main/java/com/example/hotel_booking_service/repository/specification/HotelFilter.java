@@ -7,17 +7,26 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 /**
- * Фильтр для отелей, включающий все поля из HotelDto за исключением newMark.
+ * Класс, представляющий фильтр для поиска отелей.
+ *
+ * @param id ID отеля.
+ * @param nameStarts Начало имени отеля.
+ * @param titleStarts Начало заголовка отеля.
+ * @param cityStarts Начало города, в котором находится отель.
+ * @param addressStarts Начало адреса отеля.
+ * @param distanceLte Максимальное расстояние до отеля.
+ * @param ratingIn Список рейтингов отеля.
+ * @param numberofratings Количество отзывов о отеле.
  */
 public record HotelFilter(
         Long id,
         String nameStarts,
         String titleStarts,
         String cityStarts,
-        String addressStarts,     // Добавлено для фильтрации по адресу
+        String addressStarts,
         Integer distanceLte,
         List<Integer> ratingIn,
-        Integer numberofratings   // Добавлено для фильтрации по количеству оценок
+        Integer numberofratings
 ) {
 
     public Specification<Hotel> toSpecification() {

@@ -39,17 +39,14 @@ services:
       retries: 5
     entrypoint: /bin/sh -c "chmod 600 /pgadmin4/pgpass; /entrypoint.sh;"
 
-  mongo:
+  mongodb_container:
     image: mongo:8.0.4
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: mongodb_secret
-      MONGO_INITDB_DATABASE: mydb
+      MONGO_INITDB_DATABASE: hotel_booking_db
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
     healthcheck:
       test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
       interval: 10s
@@ -96,24 +93,8 @@ services:
       zookeeper:
         condition: service_healthy
 
-  mongoexpress:
-    image: mongo-express:1.0.2
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: root
-      ME_CONFIG_BASICAUTH_PASSWORD: root
-      ME_CONFIG_MONGODB_URL: mongodb://root:mongodb_secret@mongo:27017/
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8081/status || exit -1
-      interval: 10s
-      timeout: 5s
-      start_period: 60s
-      retries: 5
-
 volumes:
   postgres_data:
   pgadmin_data:
   kafka_data:
-  mongo_data:
+  mongodb_data_container:

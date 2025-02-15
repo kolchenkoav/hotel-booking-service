@@ -18,21 +18,38 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Конфигурация Kafka для сервиса бронирования отелей.
+ */
 @Configuration
 @EnableKafka
 public class KafkaConfig {
 
+    /**
+     * Создает новую тему для регистрации пользователей.
+     *
+     * @return Новая тема Kafka для регистрации пользователей.
+     */
     @Bean
     public NewTopic userRegistrationTopic() {
         return new NewTopic("user_registration", 1, (short) 1);
     }
 
+    /**
+     * Создает новую тему для бронирования номеров.
+     *
+     * @return Новая тема Kafka для бронирования номеров.
+     */
     @Bean
     public NewTopic bookingTopic() {
         return new NewTopic("room_booking", 1, (short) 1);
     }
 
-    // Producer с JSON сериализацией
+    /**
+     * Создает фабрику производителей для Kafka.
+     *
+     * @return Фабрика производителей Kafka.
+     */
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -44,21 +61,11 @@ public class KafkaConfig {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-//    @Bean
-//    public ConsumerFactory<String, KafkaUserRegistrationEvent> consumerFactory() {
-//        JsonDeserializer<KafkaUserRegistrationEvent> deserializer =
-//                new JsonDeserializer<>(KafkaUserRegistrationEvent.class);
-//        deserializer.addTrustedPackages("com.example.hotel_booking_service.kafka.dto");
-//        deserializer.setRemoveTypeHeaders(true);
-//
-//        Map<String, Object> configProps = new HashMap<>();
-//        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-//        configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-//
-//        return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), deserializer);
-//    }
-
+    /**
+     * Создает фабрику потребителей для Kafka.
+     *
+     * @return Фабрика потребителей Kafka.
+     */
     @Bean
     public ConsumerFactory<String, KafkaUserRegistrationEvent> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -80,12 +87,21 @@ public class KafkaConfig {
         );
     }
 
-
+    /**
+     * Создает шаблон Kafka для отправки сообщений.
+     *
+     * @return Шаблон Kafka для отправки сообщений.
+     */
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
+    /**
+     * Создает фабрику контейнеров слушателей Kafka.
+     *
+     * @return Фабрика контейнеров слушателей Kafka.
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, KafkaUserRegistrationEvent> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaUserRegistrationEvent> factory =

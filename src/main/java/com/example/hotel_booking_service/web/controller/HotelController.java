@@ -19,7 +19,7 @@ import java.util.List;
  * Контроллер для управления отелями.
  */
 @RestController
-@RequestMapping("/rest/admin-ui/hotels")
+@RequestMapping("/api/v1/hotels")
 @RequiredArgsConstructor
 public class HotelController {
 

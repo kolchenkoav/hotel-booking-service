@@ -15,15 +15,6 @@ import org.springframework.stereotype.Service;
 public class KafkaProducerService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    //    public void sendUserRegistration(KafkaUserRegistrationEvent event) {
-//        Message<KafkaUserRegistrationEvent> message = MessageBuilder
-//                .withPayload(event)
-//                .setHeader("__TypeId__", KafkaUserRegistrationEvent.class.getName()) // Указываем заголовок с типом
-//                .build();
-//        log.info("KafkaProducerService -> sendUserRegistration(KafkaUserRegistrationEvent event) -> Получено событие регистрации: {}", event);
-//        log.info("KafkaProducerService -> sendUserRegistration(KafkaUserRegistrationEvent event) -> message.getPayload().getUserId(): {}", message.getPayload().getUserId());
-//        kafkaTemplate.send("user_registration", message);
-//    }
     public void sendUserRegistration(KafkaUserRegistrationEvent event) {
         // Убираем ручное добавление заголовков
         log.info("Sending user registration event: {}", event.getUserId());

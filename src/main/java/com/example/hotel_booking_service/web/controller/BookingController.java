@@ -10,17 +10,31 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления бронированиями номеров в отеле.
+ */
 @RestController
-@RequestMapping("/rest/admin-ui/bookings")
+@RequestMapping("/api/v1/bookings")
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
 
+    /**
+     * Создает новое бронирование номера.
+     *
+     * @param request объект запроса для бронирования номера
+     * @return объект ответа с информацией о созданном бронировании
+     */
     @PostMapping
     public BookingResponseDto bookRoom(@RequestBody @Valid BookingRequestDto request) {
         return bookingService.bookRoom(request);
     }
 
+    /**
+     * Получает список всех бронирований.
+     *
+     * @return список объектов ответа с информацией о всех бронированиях
+     */
     @GetMapping
     public List<BookingResponseDto> getAllBookings() {
         return bookingService.getAllBookings();

@@ -48,7 +48,6 @@ public class SecurityConfig {
      * @return экземпляр SecurityFilterChain.
      * @throws Exception если возникает ошибка при настройке.
      */
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

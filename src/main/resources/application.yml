@@ -26,6 +26,7 @@ spring:
       enable-auto-commit: false
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.example.hotel_booking_service.kafka.dto.KafkaUserRegistrationEvent
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

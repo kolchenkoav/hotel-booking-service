@@ -8,6 +8,7 @@ import com.example.hotel_booking_service.repository.UserRepository;
 import com.example.hotel_booking_service.web.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Сервис для управления пользователями.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -74,6 +76,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         // Отправляем событие в Kafka
+        log.info("UserService -> User {} registered", savedUser.getUsername());
         KafkaUserRegistrationEvent event = new KafkaUserRegistrationEvent();
         event.setUserId(savedUser.getId());
         kafkaProducerService.sendUserRegistration(event);

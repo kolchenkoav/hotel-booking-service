@@ -3,6 +3,7 @@ package com.example.hotel_booking_service.web.controller;
 import com.example.hotel_booking_service.entity.RoleType;
 import com.example.hotel_booking_service.entity.User;
 import com.example.hotel_booking_service.kafka.KafkaProducerService;
+import com.example.hotel_booking_service.kafka.dto.KafkaUserRegistrationEvent;
 import com.example.hotel_booking_service.repository.UserRepository;
 import com.example.hotel_booking_service.service.UserService;
 import com.example.hotel_booking_service.web.dto.UserDto;
@@ -49,6 +50,33 @@ class UserServiceTest {
 
         ArgumentCaptor<Long> userIdCaptor = ArgumentCaptor.forClass(Long.class);
         verify(kafkaProducerService, times(1)).sendUserRegistration(any());
+    }
+
+    @Test
+    void testUserRegistration() {
+        UserDto userDto = new UserDto("testuser", "password123", "testuser@example.com", RoleType.ROLE_USER);
+
+        // Mock repository behavior
+        User savedUser = new User();
+        savedUser.setId(1L); // Simulate ID generation
+        savedUser.setUsername(userDto.getUsername());
+        savedUser.setPassword(userDto.getPassword());
+        savedUser.setEmail(userDto.getEmail());
+        savedUser.setRole(userDto.getRole());
+
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        // Call service method
+        UserDto result = userService.create(userDto);
+
+        // Verify results
+        assertThat(result.getUsername()).isEqualTo("testuser");
+        verify(userRepository, times(1)).save(any(User.class));
+
+        ArgumentCaptor<Long> userIdCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(kafkaProducerService, times(1)).sendUserRegistration(new
+                KafkaUserRegistrationEvent());
+        assertThat(userIdCaptor.getValue()).isEqualTo(1L); // Ensure userId is set
     }
 }
 

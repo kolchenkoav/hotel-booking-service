@@ -32,4 +32,4 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://root:mongodb_secret@mongo:27017/mydb
+      uri: mongodb://root:mongodb_secret@localhost:27017/mydb

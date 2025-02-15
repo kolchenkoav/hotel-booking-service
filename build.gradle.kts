@@ -38,6 +38,7 @@ dependencies {
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
 
 	// Testing
+	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.testcontainers:testcontainers:1.20.4")
 	testImplementation("org.testcontainers:junit-jupiter:1.20.4")
 	testImplementation("org.testcontainers:postgresql:1.20.4")

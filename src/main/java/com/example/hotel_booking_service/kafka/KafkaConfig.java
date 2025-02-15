@@ -38,25 +38,26 @@ public class KafkaConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        configProps.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
 
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
     public ConsumerFactory<String, KafkaUserRegistrationEvent> consumerFactory() {
-        JsonDeserializer<KafkaUserRegistrationEvent> deserializer = new JsonDeserializer<>(KafkaUserRegistrationEvent.class);
-        deserializer.addTrustedPackages("com.example.hotel_booking_service.kafka.dto",
-                "org.springframework.messaging.support");
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.setUseTypeMapperForKey(true); // Обрабатывает заголовок __TypeId__
+        JsonDeserializer<KafkaUserRegistrationEvent> deserializer =
+                new JsonDeserializer<>(KafkaUserRegistrationEvent.class);
+        deserializer.addTrustedPackages("com.example.hotel_booking_service.kafka.dto");
+        deserializer.setRemoveTypeHeaders(true);
 
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
+        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
         return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), deserializer);
     }
+
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {

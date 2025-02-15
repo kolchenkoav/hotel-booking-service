@@ -27,11 +27,11 @@ public class StatisticsService {
      * @param event событие регистрации пользователя
      */
     public void saveUserRegistration(KafkaUserRegistrationEvent event) {
-        log.info("Сохраняем событие регистрации пользователя userId: {}", event.getUserId());
+        log.info("StatisticsService -> saveUserRegistration(KafkaUserRegistrationEvent event) -> event.getUserId(): {}", event.getUserId());
         Statistic stat = new Statistic();
         stat.setUserId(event.getUserId());
         stat.setEventType("REGISTRATION");
-        statisticRepository.save(stat);
+        //statisticRepository.save(stat);
     }
 
     /**
@@ -47,7 +47,7 @@ public class StatisticsService {
         stat.setCheckIn(event.getCheckIn());
         stat.setCheckOut(event.getCheckOut());
         stat.setEventType("BOOKING");
-        statisticRepository.save(stat);
+        //statisticRepository.save(stat);
     }
 
     /**

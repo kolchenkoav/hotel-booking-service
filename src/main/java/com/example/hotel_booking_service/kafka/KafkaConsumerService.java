@@ -16,7 +16,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "user_registration", groupId = "hotel_service", containerFactory = "kafkaListenerContainerFactory")
     public void consumeUserRegistration(KafkaUserRegistrationEvent event) {
-        log.info("Получено событие регистрации: {}", event);
+        log.info("KafkaConsumerService -> consumeUserRegistration(KafkaUserRegistrationEvent event) -> event.getUserId(): {}", event.getUserId());
         statisticsService.saveUserRegistration(event);
     }
 
